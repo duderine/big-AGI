@@ -3,6 +3,11 @@ FROM node:20-bookworm-slim AS builder
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 COPY . .
+
+# ATIVAÇÃO DO MIDDLEWARE (O pulo do gato)
+# Removemos qualquer middleware existente e forçamos o de Basic Auth
+RUN rm -f middleware.ts src/middleware.ts && cp middleware_BASIC_AUTH.ts middleware.ts
+
 ENV NEXT_PRIVATE_STANDALONE=true
 RUN npm install && npm run build
 
@@ -10,7 +15,7 @@ RUN npm install && npm run build
 FROM node:20-bookworm-slim
 WORKDIR /app
 
-# LABELS PARA LINKAR NO REPO (A mágica que você queria)
+# LABELS PARA LINKAR NO REPO
 LABEL org.opencontainers.image.source="https://github.com/duderine/big-agi"
 LABEL org.opencontainers.image.description="big-AGI container for Hugging Face"
 LABEL org.opencontainers.image.licenses=MIT
